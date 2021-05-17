@@ -12,7 +12,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.python.keras.layers import deserialize, serialize
 from tensorflow.python.keras.saving import saving_utils
 from tensorflow.keras.models import Sequential, Model
-
+import dill
 
 app = Flask(__name__)
 
@@ -53,8 +53,8 @@ class MyCustomUnpickler(pickle.Unpickler):
         return super().find_class(module, name)
 
 with open('MobileNet_200_30ep_50BS_aug_8_1_1.pkl', 'rb') as f:
-    unpickler = MyCustomUnpickler(f)
-    pickle_model = unpickler.load()
+    # unpickler = MyCustomUnpickler(f)
+    pickle_model = dill.load(f)
 
 
 @app.route('/sendImage', methods= ['POST'])

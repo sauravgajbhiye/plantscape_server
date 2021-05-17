@@ -4,7 +4,6 @@ import pickle
 import base64
 import cv2
 import urllib.request
-import PIL.Image
 import os
 from io import BytesIO
 from scipy import misc
@@ -19,30 +18,43 @@ app = Flask(__name__)
 
 
 
-class test:
-    def unpack(self, model, training_config, weights):
-        restored_model = deserialize(model)
-        if training_config is not None:
-            restored_model.compile(
-                **saving_utils.compile_args_from_training_config(
-                    training_config
-                )
+
+
+def unpack(model, training_config, weights):
+    restored_model = deserialize(model)
+    if training_config is not None:
+        restored_model.compile(
+            **saving_utils.compile_args_from_training_config(
+                training_config
             )
-        restored_model.set_weights(weights)
-        return restored_model
+        )
+    restored_model.set_weights(weights)
+    return restored_model
 
-        # Hotfix function
-        def make_keras_picklable(self):
+# Hotfix function
+# def make_keras_picklable():
 
-            def __reduce__(self):
-                model_metadata = saving_utils.model_metadata(self)
-                training_config = model_metadata.get("training_config", None)
-                model = serialize(self)
-                weights = self.get_weights()
-                return (unpack, (model, training_config, weights))
+#     def __reduce__(self):
+#         model_metadata = saving_utils.model_metadata(self)
+#         training_config = model_metadata.get("training_config", None)
+#         model = serialize(self)
+#         weights = self.get_weights()
+#         return (unpack, (model, training_config, weights))
 
-            cls = Model
-            cls.__reduce__ = __reduce__
+#     cls = Model
+#     cls.__reduce__ = __reduce__
+
+
+
+class MyCustomUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module == "unpack":
+            module = "unpack"
+        return super().find_class(module, name)
+
+with open('MobileNet_200_30ep_50BS_aug_8_1_1.pkl', 'rb') as f:
+    unpickler = MyCustomUnpickler(f)
+    pickle_model = unpickler.load()
 
 
 @app.route('/sendImage', methods= ['POST'])
@@ -53,15 +65,6 @@ def get_image():
     print(data)
     dict['imgEncoding']= str("Blah Blah")
     return dict
-    
-
-p1 = test()
-p1.unpack.make_keras_picklable()
-
-
-with open('MobileNet_200_30ep_50BS_aug_8_1_1.pkl', 'rb') as file:
-    # make_keras_picklable()
-    pickle_model = pickle.load(file)
 
 
 
@@ -90,7 +93,6 @@ def predict():
     print(Ypredict.argmax())
     ret = {'class':output}
     return jsonify(ret)
-
 
 @app.route('/test',methods=['GET'])
 def hello_world():

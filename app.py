@@ -46,11 +46,11 @@ def unpack(model, training_config, weights):
 
 
 
-class MyCustomUnpickler(pickle.Unpickler):
-    def find_class(self, module, name):
-        if module == "unpack":
-            module = "unpack"
-        return super().find_class(module, name)
+# class MyCustomUnpickler(pickle.Unpickler):
+#     def find_class(self, module, name):
+#         if module == "unpack":
+#             module = "unpack"
+#         return super().find_class(module, name)
 
 with open('MobileNet_200_30ep_50BS_aug_8_1_1.pkl', 'rb') as f:
     # unpickler = MyCustomUnpickler(f)

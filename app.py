@@ -1,6 +1,6 @@
 import numpy as np
 from flask import Flask, request, jsonify,render_template
-import pickle
+import pickle5 as pickle
 import base64
 import cv2
 import urllib.request

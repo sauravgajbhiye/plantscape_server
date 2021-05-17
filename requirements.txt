@@ -46,3 +46,4 @@ wrapt==1.12.1
 zipp==3.4.1
 dill==0.3.3
 pickle-mixin==1.0.2
+keras==2.4.3

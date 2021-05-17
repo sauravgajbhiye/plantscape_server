@@ -1,6 +1,6 @@
 import numpy as np
 from flask import Flask, request, jsonify,render_template
-import pickle5 as pickle
+import pickle
 import base64
 import cv2
 import urllib.request
@@ -17,29 +17,32 @@ from tensorflow.keras.models import Sequential, Model
 
 app = Flask(__name__)
 
-def unpack(model, training_config, weights):
-    restored_model = deserialize(model)
-    if training_config is not None:
-        restored_model.compile(
-            **saving_utils.compile_args_from_training_config(
-                training_config
+
+
+class test:
+    def unpack(self, model, training_config, weights):
+        restored_model = deserialize(model)
+        if training_config is not None:
+            restored_model.compile(
+                **saving_utils.compile_args_from_training_config(
+                    training_config
+                )
             )
-        )
-    restored_model.set_weights(weights)
-    return restored_model
+        restored_model.set_weights(weights)
+        return restored_model
 
-# Hotfix function
-# def make_keras_picklable():
+        # Hotfix function
+        def make_keras_picklable(self):
 
-#     def __reduce__(self):
-#         model_metadata = saving_utils.model_metadata(self)
-#         training_config = model_metadata.get("training_config", None)
-#         model = serialize(self)
-#         weights = self.get_weights()
-#         return (unpack, (model, training_config, weights))
+            def __reduce__(self):
+                model_metadata = saving_utils.model_metadata(self)
+                training_config = model_metadata.get("training_config", None)
+                model = serialize(self)
+                weights = self.get_weights()
+                return (unpack, (model, training_config, weights))
 
-#     cls = Model
-#     cls.__reduce__ = __reduce__
+            cls = Model
+            cls.__reduce__ = __reduce__
 
 
 @app.route('/sendImage', methods= ['POST'])
@@ -52,9 +55,10 @@ def get_image():
     return dict
     
 
+p1 = test()
+p1.unpack.make_keras_picklable()
 
 
-# make_keras_picklable()
 with open('MobileNet_200_30ep_50BS_aug_8_1_1.pkl', 'rb') as file:
     # make_keras_picklable()
     pickle_model = pickle.load(file)

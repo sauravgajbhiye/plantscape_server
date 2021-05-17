@@ -66,6 +66,8 @@ def predict():
     print(Ypredict.argmax())
     ret = {'class':output}
     return jsonify(ret)
+
+
 @app.route('/test',methods=['GET'])
 def hello_world():
     dict = {}
@@ -78,4 +80,4 @@ def hello_html():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(debug=True)
